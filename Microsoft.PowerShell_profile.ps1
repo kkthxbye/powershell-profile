@@ -10,7 +10,7 @@ $env:PATH += @(
     '~/bin',
     '/home/linuxbrew/.linuxbrew/bin',
     '/.cargo/bin',
-    $(trdl bin-path werf 1.2 stable)
+    $(~/bin/trdl bin-path werf 1.2 stable)
 ) | Join-String -Separator ":"
 
 oh-my-posh --init --shell pwsh --config ~/.poshthemes/kkthxbye.omp.json | Invoke-Expression
