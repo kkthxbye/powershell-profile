@@ -1,6 +1,9 @@
-Set-PSReadLineOption -EditMode Windows
-Set-PSReadLineOption -PredictionSource HistoryAndPlugin
-Set-PSReadLineOption -PredictionViewStyle ListView
+Set-PSReadLineOption -EditMode Windows `
+    -PredictionSource HistoryAndPlugin `
+    -HistoryNoDuplicates `
+    -MaximumHistoryCount 50000 `
+    -ShowToolTips `
+    -PredictionViewStyle ListView
 
 $env:SHELL = '/usr/bin/pwsh'
 $env:EDITOR = 'mcedit'
