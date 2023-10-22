@@ -28,14 +28,6 @@ function snowsqlps {
     snowsql --config ~/.snowsql/csv $args | Out-String | ConvertFrom-Csv
 }
 
-function PsqlToCsv {
-    param (
-        [Parameter(Mandatory)]
-        [string]$Query
-    )
-    return "copy ($($Query.TrimEnd(";", "`n"))) to stdout with csv header delimiter ',';"
-}
-
 function psqlps {
     param (
         [Parameter(Mandatory, Position=0)]
@@ -45,5 +37,5 @@ function psqlps {
         [string]$Query
     )
     $env:PGSERVICE = $ConnectionAlias
-    psql --command "$(PsqlToCsv($Query))" | ConvertFrom-Csv
+    psql --csv --command "$Query" | ConvertFrom-Csv
 }
