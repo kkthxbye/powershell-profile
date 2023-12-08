@@ -18,13 +18,6 @@ $env:PATH += @(
 
 oh-my-posh --init --shell pwsh --config ~/.poshthemes/kkthxbye.omp.json | Invoke-Expression
 
-# helm completion powershell | Out-String | Invoke-Expression
-# Import-Module posh-dotnet
-# Import-Module DockerCompletion
-# Import-Module posh-git
-# Import-Module PSKubectlCompletion
-# Import-Module npm-completion
-
 Import-Module powershell-yaml
 
 # TODO Look into https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.crescendo/about/about_crescendo
