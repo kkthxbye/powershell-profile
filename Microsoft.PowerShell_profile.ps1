@@ -27,6 +27,7 @@ oh-my-posh --init --shell pwsh --config ~/.poshthemes/kkthxbye.omp.json | Invoke
 
 Import-Module powershell-yaml
 
+# TODO Look into https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.crescendo/about/about_crescendo
 function snowsqlps {
     snowsql --config ~/.snowsql/csv $args | Out-String | ConvertFrom-Csv
 }
@@ -41,4 +42,8 @@ function psqlps {
     )
     $env:PGSERVICE = $ConnectionAlias
     psql --csv --command "$Query" | ConvertFrom-Csv
+}
+
+function sqlite3ps {
+    sqlite3 --csv --header $args | ConvertFrom-Csv
 }
