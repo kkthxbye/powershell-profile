@@ -33,8 +33,10 @@ function psqlps {
         [Parameter(Mandatory, Position=1)]
         [string]$Query
     )
+    $tmp = $env:PGSERVICE
     $env:PGSERVICE = $ConnectionAlias
     psql --csv --command "$Query" | ConvertFrom-Csv
+    $env:PGSERVICE = $tmp
 }
 
 function sqlite3ps {
