@@ -50,6 +50,19 @@ function Get-PsrHistory {
     Get-Content (Get-PSReadlineOption).HistorySavePath
 }
 
+function Write-Newlines {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory,
+                   ValueFromPipeline)]
+        [string[]]$s
+    )
+
+    PROCESS {
+        $s -replace "\\n", "`n"
+    }
+}
+
 function Watch-JenkinsLog {
     param(
         [Parameter(Mandatory, Position=0)]
