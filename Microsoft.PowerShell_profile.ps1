@@ -46,6 +46,10 @@ function sqlite3ps {
     sqlite3 --csv --header $args | ConvertFrom-Csv
 }
 
+function Get-PsrHistory {
+    Get-Content (Get-PSReadlineOption).HistorySavePath
+}
+
 function Watch-JenkinsLog {
     param(
         [Parameter(Mandatory, Position=0)]
