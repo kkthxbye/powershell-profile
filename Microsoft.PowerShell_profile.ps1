@@ -19,7 +19,7 @@ $env:PATH += @(
     $(~/bin/trdl bin-path werf 1.2 stable)
 ) | Join-String -Separator ":"
 
-oh-my-posh --init --shell pwsh --config ~/.poshthemes/kkthxbye.omp.json | Invoke-Expression
+oh-my-posh init pwsh --config ~/.poshthemes/kkthxbye.omp.json | Invoke-Expression
 
 Import-Module powershell-yaml
 
