@@ -58,7 +58,10 @@ function Write-Newlines {
     )
 
     PROCESS {
-        $s -replace "\\n", "`n"
+        $s -replace "\\\\n",  "`n"`
+            -replace "\\n", "`n" `
+            -replace "\\t", "`t" `
+            -replace "\\r" , "`r"`
     }
 }
 
