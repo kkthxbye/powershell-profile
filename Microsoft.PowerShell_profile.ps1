@@ -10,14 +10,13 @@ Set-PSReadLineOption @PSReadLineOptions
 
 $env:SHELL = '/usr/bin/pwsh'
 $env:EDITOR = 'mcedit'
-$env:PATH += @(
-    '',
-    '~/.local/bin/',
-    '~/bin',
+$env:PATH = (@(
+    "$env:HOME/.local/bin/",
+    "$env:HOME/bin",
     '/home/linuxbrew/.linuxbrew/bin',
     '/.cargo/bin',
     $(~/bin/trdl bin-path werf 1.2 stable)
-) | Join-String -Separator ":"
+) | Join-String -Separator ":"), $env:PATH | Join-String -Separator ":"
 
 oh-my-posh init pwsh --config ~/.poshthemes/kkthxbye.omp.json | Invoke-Expression
 
