@@ -1,3 +1,7 @@
+$c = [cultureinfo]::new('en-GB')
+$c.DateTimeFormat.ShortDatePattern = 'dd.MM.yyyy'
+[cultureinfo]::CurrentCulture = $c
+
 $PSReadLineOptions = @{
     EditMode = 'Windows'
     PredictionSource = 'HistoryAndPlugin'
