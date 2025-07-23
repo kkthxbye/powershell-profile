@@ -8,7 +8,7 @@ $PSReadLineOptions = @{
     HistoryNoDuplicates = $true
     MaximumHistoryCount = 100000
     PredictionViewStyle = 'ListView'
-    ContinuationPrompt = ''
+    AddToHistoryHandler = $null
 }
 Set-PSReadLineOption @PSReadLineOptions
 
