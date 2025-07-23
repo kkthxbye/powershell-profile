@@ -8,6 +8,7 @@ $PSReadLineOptions = @{
     HistoryNoDuplicates = $true
     MaximumHistoryCount = 100000
     PredictionViewStyle = 'ListView'
+    ContinuationPrompt = $null
     AddToHistoryHandler = $null
     WordDelimiters = ";:,.[]{}()/\|^&*-=+'`"---_"
 }
