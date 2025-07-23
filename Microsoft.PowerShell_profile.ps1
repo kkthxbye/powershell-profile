@@ -9,6 +9,7 @@ $PSReadLineOptions = @{
     MaximumHistoryCount = 100000
     PredictionViewStyle = 'ListView'
     AddToHistoryHandler = $null
+    WordDelimiters = ";:,.[]{}()/\|^&*-=+'`"---_"
 }
 Set-PSReadLineOption @PSReadLineOptions
 
