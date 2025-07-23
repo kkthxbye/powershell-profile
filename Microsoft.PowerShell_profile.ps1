@@ -67,6 +67,19 @@ function Get-PsrHistory {
     Get-Content (Get-PSReadlineOption).HistorySavePath
 }
 
+function Authorize-Aws {
+    $j = Start-ThreadJob {
+        aws sso login --no-browser --profile 'sm-dev'
+    }
+    do {
+        $url = Receive-Job $j -Keep | Select-String -NoEmphasis "user_code"
+        $url
+    } while (!$url)
+    Receive-Job $j | Out-Null
+    opera.exe --app-url "$url"
+     $j | Wait-Job | Receive-Job
+}
+
 function Write-Newlines {
     [CmdletBinding()]
     param (
