@@ -115,12 +115,18 @@ function Watch-JenkinsLog {
     $cred = New-Object System.Management.Automation.PSCredential($Username, $(ConvertTo-SecureString $key -AsPlainText));
     $start = 0;
     do {
-        $r = (Invoke-WebRequest `
-            -Authentication Basic `
-            -Credential $cred `
-            $progressive_url `
-            -Body @{'start'=$start}
-        );
+        try {
+            $r = (Invoke-WebRequest `
+                -verbose `
+                -Authentication Basic `
+                -Credential $cred `
+                $progressive_url `
+                -Body @{'start'=$start}
+            )
+        } catch {
+            $_.Exception.Response
+        }
+
         $start = [int]$r.Headers.'X-Text-Size'[0];
         $done = $null -eq  $r.Headers.'X-More-Data';
         Write-Host -NoNewline $r.Content;
