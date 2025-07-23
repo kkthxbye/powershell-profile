@@ -43,11 +43,19 @@ function psqlps {
         [string]$ConnectionAlias,
 
         [Parameter(Mandatory, Position=1)]
-        [string]$Query
+        [string]$Query,
+
+        [Parameter(ValueFromPipeline)]
+        [string]$InputObject
     )
     $tmp = $env:PGSERVICE
     $env:PGSERVICE = $ConnectionAlias
-    psql --csv --command "$Query" | ConvertFrom-Csv
+    if ($MyInvocation.ExpectingInput){
+        $input | & psql @args --csv --command "$Query" | Out-String | ConvertFrom-Csv
+    } else {
+        & psql @args --csv --command "$Query" | Out-String | ConvertFrom-Csv
+    }
+
     $env:PGSERVICE = $tmp
 }
 
