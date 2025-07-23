@@ -26,6 +26,10 @@ $env:PATH = (@(
 
 oh-my-posh init pwsh --config ~/.poshthemes/kkthxbye.omp.json | Invoke-Expression
 
+Set-PsFzfOption -EnableAliasFuzzyHistory -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+
+$env:_PSFZF_FZF_DEFAULT_OPTS = '--wrap'
+
 Import-Module powershell-yaml
 
 # TODO Look into https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.crescendo/about/about_crescendo
