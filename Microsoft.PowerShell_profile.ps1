@@ -133,3 +133,32 @@ function Watch-JenkinsLog {
         Start-Sleep $Period;
     } while (!$done)
 }
+
+function Wait-RDSDBLog {
+    param(
+        [Parameter(Mandatory, Position=0)]
+        [string]$DBInstanceIdentifier
+    )
+    $credentials = Get-AWSCredential
+    $region = (Get-AWSRegion | Where-Object IsShellDefault).Region
+
+    (
+        @($credentials, "No credentials selected"),
+        @($region, "No region specified")
+    ) | ForEach-Object {
+        if ($null -eq ($_[0])) {
+            throw $_[1]
+        }
+    }
+
+    $j = Start-ThreadJob {
+        Set-DefaultAWSRegion "$($using:region)"
+        Get-RDSDBLogFile -DBInstanceIdentifier $using:DBInstanceIdentifier -Credential $using:credentials `
+            | Select-Object -Last 1 `
+            | Get-RDSDBLogFilePortion -DBInstanceIdentifier $using:DBInstanceIdentifier -Credential $using:credentials
+    }
+    while ($true) {
+        Receive-Job $j | Where-Object LogFileData | Select-Object -ExpandProperty LogFileData
+    }
+}
+
