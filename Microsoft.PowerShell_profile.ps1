@@ -77,7 +77,7 @@ function Authorize-Aws {
     } while (!$url)
     Receive-Job $j | Out-Null
     opera.exe --app-url "$url"
-     $j | Wait-Job | Receive-Job
+    $j | Wait-Job | Receive-Job
 }
 
 function Write-Newlines {
