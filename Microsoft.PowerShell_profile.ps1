@@ -100,16 +100,16 @@ function Write-Newlines {
 
 function Watch-JenkinsLog {
     param(
-        [Parameter(Mandatory, Position=0)]
+        [Parameter(Mandatory)]
         [string]$Url,
 
-        [Parameter(Mandatory, Position=1)]
-        [string]$Username,
+        [Parameter()]
+        [string]$Username = $secrets.jenkins.username,
 
-        [Parameter(Position=2)]
+        [Parameter()]
         [string]$TokenPath = "./.jenkins",
 
-        [Parameter(Position=3)]
+        [Parameter()]
         [float]$Period = 1
     )
     $progressive_url = $Url.TrimEnd('/'), 'logText', 'progressiveText' -join "/"
