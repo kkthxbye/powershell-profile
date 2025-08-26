@@ -1,3 +1,5 @@
+$secrets = . "$(Split-Path $PROFILE)\secrets.ps1"
+
 $c = [cultureinfo]::new('en-GB')
 $c.DateTimeFormat.ShortDatePattern = 'dd.MM.yyyy'
 [cultureinfo]::CurrentCulture = $c
@@ -177,3 +179,5 @@ function Enter-PythonVenv {
         "Activated venv: $_"
     }
 }
+
+Remove-Variable 'secrets'
