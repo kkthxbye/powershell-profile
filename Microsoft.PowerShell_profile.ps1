@@ -1,3 +1,5 @@
+# Set-PSDebug -Trace 1
+
 $secrets = . "$(Split-Path $PROFILE)\secrets.ps1"
 
 $c = [cultureinfo]::new('en-GB')
@@ -23,7 +25,10 @@ $env:PATH = (@(
     "$env:HOME/bin",
     '/home/linuxbrew/.linuxbrew/bin',
     '/.cargo/bin',
-    $(~/bin/trdl bin-path werf 1.2 stable)
+    "$env:HOME/.pyenv",
+    "$env:HOME/.pyenv/bin",
+    "$env:HOME/.nvm"
+    # $(~/bin/trdl bin-path werf 1.2 stable)
 ) | Join-String -Separator ":"), $env:PATH | Join-String -Separator ":"
 
 oh-my-posh init pwsh --config ~/.poshthemes/kkthxbye.omp.json | Invoke-Expression
@@ -34,8 +39,20 @@ $env:_PSFZF_FZF_DEFAULT_OPTS = '--wrap'
 
 Import-Module powershell-yaml
 
+$null = Register-EngineEvent -SourceIdentifier 'PowerShell.OnIdle' -MaxTriggerCount 1 -Action {
+        $env:PATH = (@(
+        $(~/bin/trdl bin-path werf 1.2 stable)
+    ) | Join-String -Separator ":"), $env:PATH | Join-String -Separator ":"
+    Set-PsFzfOption -EnableAliasFuzzyHistory -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+}
+
+# Invoke-Expression "pyenv init - pwsh"
+# Invoke-Expression "pyenv virtualenv-init -"
+
 # TODO Look into https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.crescendo/about/about_crescendo
 function snowsqlps {
+    # TODO: EWWWWWWW
+    snowsql --config ~/.snowsql/csv --query "ALTER USER SET MINS_TO_BYPASS_MFA = 60;" | Out-Null;
     snowsql --config ~/.snowsql/csv $args | Out-String | ConvertFrom-Csv
 }
 
@@ -198,5 +215,3 @@ function Enter-PythonVenv {
         "Activated venv: $_"
     }
 }
-
-# Set-PSDebug -Trace 0
