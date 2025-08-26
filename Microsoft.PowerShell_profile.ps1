@@ -161,3 +161,19 @@ function Wait-RDSDBLog {
     }
 }
 
+function Invoke-Make {
+    $escapedArgs = $args | ForEach-Object { $_ -replace "'", "''" }
+    $rawArgs = $escapedArgs -join ' '
+    $cmd = "make --% SHELL=/bin/bash $rawArgs"
+    Invoke-Expression $cmd
+}
+
+function Enter-PythonVenv {
+    $a = "Activate.ps1"
+    $a, $a.ToLower() | ForEach-Object {
+        $path = "./.venv/bin/$_"; $path
+    } | Where-Object { Test-Path $_ } | ForEach-Object {
+        . $_
+        "Activated venv: $_"
+    }
+}
