@@ -163,6 +163,25 @@ function Wait-RDSDBLog {
     }
 }
 
+function Set-AwsDefaultProfile {
+    param(
+        [Parameter(Mandatory, Position=0)]
+        [ValidateScript({($secrets.aws.default_profiles_regions.Keys -contains $_) ? $true : $false})]
+        [string]$ProfileName
+    )
+    $default_regions = $secrets.aws.default_profiles_regions
+
+    $Global:aws_profile = $ProfileName
+    $env:AWS_DEFAULT_PROFILE = $aws_profile
+    [System.Environment]::SetEnvironmentVariable('AWS_DEFAULT_PROFILE', $aws_profile, 'User')
+
+    Set-AWSCredential -ProfileName $ProfileName -Scope Global
+    Set-DefaultAWSRegion $default_regions[$ProfileName] -Scope Global
+
+    Write-Host "🟢 Switched to profile: $aws_profile with region $($default_regions[$aws_profile])"
+}
+
+
 function Invoke-Make {
     $escapedArgs = $args | ForEach-Object { $_ -replace "'", "''" }
     $rawArgs = $escapedArgs -join ' '
@@ -180,4 +199,4 @@ function Enter-PythonVenv {
     }
 }
 
-Remove-Variable 'secrets'
+# Set-PSDebug -Trace 0
