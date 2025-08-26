@@ -67,7 +67,7 @@ function Get-PsrHistory {
     Get-Content (Get-PSReadlineOption).HistorySavePath
 }
 
-function Authorize-Aws {
+function Enter-AwsSession {
     $j = Start-ThreadJob {
         aws sso login --no-browser --profile 'sm-dev'
     }
