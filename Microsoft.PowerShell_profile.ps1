@@ -117,7 +117,6 @@ function Watch-JenkinsLog {
     do {
         try {
             $r = (Invoke-WebRequest `
-                -verbose `
                 -Authentication Basic `
                 -Credential $cred `
                 $progressive_url `
