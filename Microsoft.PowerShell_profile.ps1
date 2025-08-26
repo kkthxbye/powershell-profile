@@ -104,8 +104,8 @@ function Watch-JenkinsLog {
         [Parameter(Mandatory, Position=1)]
         [string]$Username,
 
-        [Parameter(Mandatory, Position=2)]
-        [string]$TokenPath,
+        [Parameter(Position=2)]
+        [string]$TokenPath = "./.jenkins",
 
         [Parameter(Position=3)]
         [float]$Period = 1
