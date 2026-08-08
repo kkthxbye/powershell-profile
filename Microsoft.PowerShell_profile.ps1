@@ -1,4 +1,5 @@
-$Include = "$(Split-Path $PROFILE)\Include"
+$ProfileItem = Get-Item $PROFILE
+$Include = if ($ProfileItem.LinkType) { Split-Path $ProfileItem.Target } else { Split-Path $ProfileItem.FullName }
 
 $secrets = . "$Include\Secrets.ps1"
 $configs = . "$Include\Configs.ps1"
