@@ -1,0 +1,55 @@
+# if ($env:TERM_PROGRAM -eq "vscode") {
+#     . "$(code --locate-shell-integration-path pwsh)"
+# }
+
+$env:SHELL = '/usr/bin/pwsh'
+$env:EDITOR = 'code --wait'
+# $env:EDITOR = 'mcedit'
+# $env:EDITOR = 'micro'
+$env:PATH = (@(
+        "$env:HOME/.local/bin/",
+        "$env:HOME/bin",
+        '/home/linuxbrew/.linuxbrew/bin',
+        '/.cargo/bin',
+        "$env:HOME/.pyenv",
+        "$env:HOME/.pyenv/bin",
+        "$env:HOME/.nvm",
+        "$env:HOME/.uv/venvs/bin/",
+        "$env:HOME/go/bin/",
+        "$env:HOME/.duckdb/cli/latest/duckdb",
+        "$env:HOME/.terragrunt/bin"
+        # $(~/bin/trdl bin-path werf 1.2 stable)
+    ) | Join-String -Separator ":"), $env:PATH | Join-String -Separator ":"
+
+$null = Register-EngineEvent -SourceIdentifier 'PowerShell.OnIdle' -MaxTriggerCount 1 -Action {
+    $env:PATH = (@(
+            $(~/bin/trdl bin-path werf 1.2 stable)
+        ) | Join-String -Separator ":"), $env:PATH | Join-String -Separator ":"
+    Set-PsFzfOption -EnableAliasFuzzyHistory -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+}
+
+Import-Module PsqlPs
+Import-Module MySqlPs
+
+function psqlps_legacy {
+    param (
+        [Parameter(Mandatory, Position = 0)]
+        [string]$ConnectionAlias,
+
+        [Parameter(Mandatory, Position = 1)]
+        [string]$Query,
+
+        [Parameter(ValueFromPipeline)]
+        [string]$InputObject
+    )
+    $tmp = $env:PGSERVICE
+    $env:PGSERVICE = $ConnectionAlias
+    if ($MyInvocation.ExpectingInput) {
+        $input | & psql @args --csv --command "$Query" | Out-String | ConvertFrom-Csv
+    }
+    else {
+        & psql @args --csv --command "$Query" | Out-String | ConvertFrom-Csv
+    }
+
+    $env:PGSERVICE = $tmp
+}
