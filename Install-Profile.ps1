@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$root = Split-Path $PSScriptRoot
+$root = $PSScriptRoot
 $profileSource = Join-Path $root "Microsoft.PowerShell_profile.ps1"
 $includeSource = Join-Path $root "Include"
 
