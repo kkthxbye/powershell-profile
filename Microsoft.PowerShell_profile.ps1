@@ -6,6 +6,7 @@ $secrets = . (Join-Path $Include "Secrets.ps1")
 $configs = . (Join-Path $Include "Configs.ps1")
 
 . (Join-Path $Include "Environment.ps1")
+. (Join-Path $Include "Prompt.ps1")
 . (Join-Path $Include "Aws.ps1")
 . (Join-Path $Include "Database.ps1")
 . (Join-Path $Include "Utils.ps1")
