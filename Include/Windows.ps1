@@ -3,85 +3,85 @@ function Select-AudioDevice {
     .LINK
     https://github.com/frgnca/AudioDeviceCmdlets
     #>
-  param(
-    [Parameter(Mandatory, Position=0)]
-    [string]$Device
-  )
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [string]$Device
+    )
 
-  (Get-AudioDevice -List `
-    | Where-Object { ($_.name -ilike "*$Device*") -and ($_.type -eq 'Playback') -and (-not $_.default) } `
-    | Select-Object -First 1 `
+    (Get-AudioDevice -List `
+  | Where-Object { ($_.name -ilike "*$Device*") -and ($_.type -eq 'Playback') -and (-not $_.default) } `
+  | Select-Object -First 1 `
   ) `
-    | Set-AudioDevice | Select-Object Name
+  | Set-AudioDevice | Select-Object Name
 }
 
 function Start-TvSession {
-  param(
-    [Parameter(Position=0)]
-    [bool]$WithSteam = $false,
+    param(
+        [Parameter(Position = 0)]
+        [bool]$WithSteam = $false,
 
-    [Parameter(Position=0)]
-    [bool]$SwitchPrimary = $true
-  )
+        [Parameter(Position = 0)]
+        [bool]$SwitchPrimary = $true
+    )
 
-  $mmt = $configs.Windows.MultiMonTool
-  $cfg_path = $mmt.TvLayoutPath
+    $mmt = $configs.Windows.MultiMonTool
+    $cfg_path = $mmt.TvLayoutPath
 
-  $mmt.TvLayoutContent | Out-File "$cfg_path"
+    $mmt.TvLayoutContent | Out-File "$cfg_path"
 
-  $tv = $mmt.TvMonitorId
-  $tv_speakers = $mmt.TvSpeakers
+    $tv = $mmt.TvMonitorId
+    $tv_speakers = $mmt.TvSpeakers
 
-  multimonitortool /enable "$tv"
-  Start-Sleep -Seconds 2
-  multimonitortool /loadconfig "$cfg_path"
-  if ($SwitchPrimary) {
+    multimonitortool /enable "$tv"
     Start-Sleep -Seconds 2
-    multimonitortool /setprimary "$tv"
-  }
+    multimonitortool /loadconfig "$cfg_path"
+    if ($SwitchPrimary) {
+        Start-Sleep -Seconds 2
+        multimonitortool /setprimary "$tv"
+    }
 
-  if ($WithSteam) {
-    Stop-Process -Name "steam"
-    steam -bigpicture
-  }
+    if ($WithSteam) {
+        Stop-Process -Name "steam"
+        steam -bigpicture
+    }
 
-  Select-AudioDevice "$tv_speakers"
+    Select-AudioDevice "$tv_speakers"
 }
 
 function Stop-TvSession {
-  param(
-    [Parameter(Position=0)]
-    [bool]$WithSteam = $false,
+    param(
+        [Parameter(Position = 0)]
+        [bool]$WithSteam = $false,
 
-      [Parameter(Position=0)]
-    [bool]$SwitchPrimary = $true
-  )
+        [Parameter(Position = 0)]
+        [bool]$SwitchPrimary = $true
+    )
 
-  $mmt = $configs.Windows.MultiMonTool
-  $cfg_path = $mmt.DefaultLayoutPath
-  $mmt.DefaultLayoutContent | Out-File "$cfg_path"
+    $mmt = $configs.Windows.MultiMonTool
+    $cfg_path = $mmt.DefaultLayoutPath
+    $mmt.DefaultLayoutContent | Out-File "$cfg_path"
 
-  $tv = $mmt.TvMonitorId
-  $monitor = $mmt.DesktopMonitorId
-  $desktop_speakers = $mmt.DesktopSpeakers
+    $tv = $mmt.TvMonitorId
+    $monitor = $mmt.DesktopMonitorId
+    $desktop_speakers = $mmt.DesktopSpeakers
 
-  multimonitortool /loadconfig "$cfg_path"
-  Start-Sleep -Seconds 2
+    multimonitortool /loadconfig "$cfg_path"
+    Start-Sleep -Seconds 2
 
-  if ($SwitchPrimary) {
-    multimonitortool /setprimary "$monitor"
-    Start-Sleep -Seconds 1
-  }
+    if ($SwitchPrimary) {
+        multimonitortool /setprimary "$monitor"
+        Start-Sleep -Seconds 1
+    }
 
-  multimonitortool /disable "$tv"
-  Start-Sleep -Seconds 2
+    multimonitortool /disable "$tv"
+    Start-Sleep -Seconds 2
 
-  Select-AudioDevice "$desktop_speakers"
+    Select-AudioDevice "$desktop_speakers"
 }
 
 function Start-MonitorStandby {
     $j = Start-ThreadJob {
-      Add-Type -TypeDefinition @"
+        Add-Type -TypeDefinition @"
   using System;
   using System.Runtime.InteropServices;
   public class MonitorControl {
@@ -90,12 +90,12 @@ function Start-MonitorStandby {
   }
 "@
 
-      $HWND_BROADCAST = [intptr]0xffff
-      $WM_SYSCOMMAND = 0x0112
-      $SC_MONITORPOWER = 0xF170
-      $MONITOR_OFF = 2
+        $HWND_BROADCAST = [intptr]0xffff
+        $WM_SYSCOMMAND = 0x0112
+        $SC_MONITORPOWER = 0xF170
+        $MONITOR_OFF = 2
 
-      [MonitorControl]::SendMessage($HWND_BROADCAST, $WM_SYSCOMMAND, [intptr]$SC_MONITORPOWER, [intptr]$MONITOR_OFF)
+        [MonitorControl]::SendMessage($HWND_BROADCAST, $WM_SYSCOMMAND, [intptr]$SC_MONITORPOWER, [intptr]$MONITOR_OFF)
     }
 
     $j | Wait-Job -Timeout 1 | Stop-Job
