@@ -1,17 +1,25 @@
 function Enter-AwsSession {
+    [CmdletBinding()]
+    param()
     $j = Start-ThreadJob {
-        aws sso login --no-browser --profile 'sm-dev'
+        aws sso login --no-browser
     }
+    $seen = 0
     do {
         Start-Sleep -Milliseconds 200
-        $url = Receive-Job $j -Keep | Select-String -NoEmphasis "^https?://\S+"
+        $lines = @(Receive-Job $j -Keep)
+        if ($lines.Count -gt $seen) {
+            $lines[$seen..($lines.Count - 1)] | ForEach-Object { Write-Verbose $_ }
+            $seen = $lines.Count
+        }
+        $url = $lines | Select-String -NoEmphasis "^https?://\S+"
     } while (!$url -and $j.State -eq 'Running')
     if (!$url) {
         Receive-Job $j
         Write-Error "Enter-AwsSession: aws sso login exited without producing a login URL."
         return
     }
-    Receive-Job $j | Out-Null
+    Receive-Job $j | ForEach-Object { Write-Verbose $_ }
     Write-Host "$url"
     & $env:BROWSER --app-url "$url"
     $j | Wait-Job | Receive-Job
