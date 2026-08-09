@@ -4,8 +4,7 @@
 
 $env:SHELL = '/usr/bin/pwsh'
 $env:EDITOR = 'code --wait'
-# $env:EDITOR = 'mcedit'
-# $env:EDITOR = 'micro'
+$env:BROWSER = 'opera.exe'
 $env:PATH = (@(
         "$env:HOME/.local/bin/",
         "$env:HOME/bin",
