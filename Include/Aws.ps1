@@ -3,11 +3,17 @@ function Enter-AwsSession {
         aws sso login --no-browser --profile 'sm-dev'
     }
     do {
-        $url = Receive-Job $j -Keep | Select-String -NoEmphasis "user_code"
-        $url
-    } while (!$url)
+        Start-Sleep -Milliseconds 200
+        $url = Receive-Job $j -Keep | Select-String -NoEmphasis "^https?://\S+"
+    } while (!$url -and $j.State -eq 'Running')
+    if (!$url) {
+        Receive-Job $j
+        Write-Error "Enter-AwsSession: aws sso login exited without producing a login URL."
+        return
+    }
     Receive-Job $j | Out-Null
-    opera.exe --app-url "$url"
+    Write-Host "$url"
+    & $env:BROWSER --app-url "$url"
     $j | Wait-Job | Receive-Job
 }
 
