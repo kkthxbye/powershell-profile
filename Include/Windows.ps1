@@ -1,3 +1,6 @@
+$env:EDITOR = 'code --wait'
+$env:BROWSER = 'opera.exe'
+
 function Select-AudioDevice {
     <#
     .LINK
