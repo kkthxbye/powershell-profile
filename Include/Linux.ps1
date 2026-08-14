@@ -8,7 +8,6 @@ $env:BROWSER = 'opera.exe'
 $env:PATH = (@(
         "$env:HOME/.local/bin/",
         "$env:HOME/bin",
-        '/home/linuxbrew/.linuxbrew/bin',
         '/.cargo/bin',
         "$env:HOME/.pyenv",
         "$env:HOME/.pyenv/bin",
