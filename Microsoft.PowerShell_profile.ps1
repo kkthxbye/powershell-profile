@@ -8,15 +8,13 @@ $configsPath = Join-Path $Include "Configs.ps1"
 $secrets = if (Test-Path $secretsPath) { . $secretsPath }
 $configs = if (Test-Path $configsPath) { . $configsPath }
 
-. (Join-Path $Include "Environment.ps1")
-. (Join-Path $Include "Prompt.ps1")
-. (Join-Path $Include "Aws.ps1")
-. (Join-Path $Include "Database.ps1")
-. (Join-Path $Include "Utils.ps1")
+Get-ChildItem (Join-Path $Include "Common") -Filter "*.ps1" | Sort-Object Name | ForEach-Object { . $_.FullName }
 
 if ($IsWindows) {
     . (Join-Path $Include "Windows.ps1")
+    Get-ChildItem (Join-Path $Include "Windows") -Filter "*.ps1" | Sort-Object Name | ForEach-Object { . $_.FullName }
 }
 elseif ($IsLinux) {
     . (Join-Path $Include "Linux.ps1")
+    Get-ChildItem (Join-Path $Include "Linux") -Filter "*.ps1" | Sort-Object Name | ForEach-Object { . $_.FullName }
 }
