@@ -1,3 +1,10 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+    'PSUseDeclaredVarsMoreThanAssignments',
+    '',
+    Justification = 'secrets/configs are consumed by dot-sourced Include scripts and there is no per-line #ignore'
+)]
+param()
+
 $ProfileItem = Get-Item $PROFILE
 $Base = if ($ProfileItem.LinkType) { Split-Path $ProfileItem.Target } else { Split-Path $ProfileItem.FullName }
 $Include = Join-Path $Base "Include"
