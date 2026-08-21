@@ -13,10 +13,10 @@ function Backup-SettingsFile {
     $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
     Copy-Item -LiteralPath $Path -Destination (Join-Path $backupDir "$name.$stamp.bak") -Force
 
-    Get-ChildItem $backupDir -Filter "$name.*.bak" |
-        Sort-Object LastWriteTime -Descending |
-        Select-Object -Skip 5 |
-        Remove-Item -Force
+    Get-ChildItem $backupDir -Filter "$name.*.bak" `
+        | Sort-Object LastWriteTime -Descending `
+        | Select-Object -Skip 5 `
+        | Remove-Item -Force
 }
 
 function Restore-SettingsFile {
@@ -27,9 +27,9 @@ function Restore-SettingsFile {
 
     $backupDir = Join-Path (Split-Path $Path) '.theme-backups'
     $name = Split-Path $Path -Leaf
-    $latest = Get-ChildItem $backupDir -Filter "$name.*.bak" -ErrorAction SilentlyContinue |
-        Sort-Object LastWriteTime -Descending |
-        Select-Object -First 1
+    $latest = Get-ChildItem $backupDir -Filter "$name.*.bak" -ErrorAction SilentlyContinue `
+        | Sort-Object LastWriteTime -Descending `
+        | Select-Object -First 1
 
     if (-not $latest) {
         Write-Warning "No backup found for $Path"
