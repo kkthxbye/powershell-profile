@@ -2,6 +2,19 @@ function Get-PsrHistory {
     Get-Content (Get-PSReadlineOption).HistorySavePath
 }
 
+function Export-AtuinHistoryToPsr {
+    if (-not (Get-Command atuin -ErrorAction Ignore)) {
+        Write-Error "atuin executable not found in PATH."
+        return
+    }
+
+    $path = (Get-PSReadlineOption).HistorySavePath
+    $commands = atuin history list --cmd-only --reverse false | Where-Object { $_ -ne '' }
+    Set-Content -LiteralPath $path -Value $commands -Encoding utf8
+
+    "Wrote $($commands.Count) command(s) from atuin history to $path"
+}
+
 function Write-Newlines {
     [CmdletBinding()]
     param (
