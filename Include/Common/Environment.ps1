@@ -25,3 +25,5 @@ Set-PsFzfOption -EnableAliasFuzzyHistory -PSReadlineChordProvider 'Ctrl+t' -PSRe
 $env:_PSFZF_FZF_DEFAULT_OPTS = '--wrap'
 
 Import-Module powershell-yaml
+
+atuin init powershell --disable-up-arrow --disable-ctrl-r | Out-String | Invoke-Expression
