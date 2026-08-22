@@ -26,7 +26,7 @@ try {
 oh-my-posh init pwsh --config "~/.poshthemes/kkthxbye.omp.json" | Invoke-Expression
 
 Set-PsFzfOption -EnableAliasFuzzyHistory -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
-$env:_PSFZF_FZF_DEFAULT_OPTS = '--wrap'
+$env:_PSFZF_FZF_DEFAULT_OPTS = '--wrap --height=100%'
 
 Import-Module powershell-yaml
 
