@@ -12,11 +12,15 @@ $PSReadLineOptions = @{
     AddToHistoryHandler = $null
     WordDelimiters = ";:,.[]{}()/\|^&*-=+'`"---_"
 }
-Set-PSReadLineOption @PSReadLineOptions
+try {
+    Set-PSReadLineOption @PSReadLineOptions
 
-Set-PSReadLineOption -Colors @{
-    "Operator" = "`e[38;2;150;150;150m"
-    "Parameter" = "`e[38;2;150;150;150m"
+    Set-PSReadLineOption -Colors @{
+        "Operator" = "`e[38;2;150;150;150m"
+        "Parameter" = "`e[38;2;150;150;150m"
+    }
+} catch {
+    # No interactive console available (e.g. non-interactive SSH exec) - skip PSReadLine setup
 }
 
 oh-my-posh init pwsh --config "~/.poshthemes/kkthxbye.omp.json" | Invoke-Expression
