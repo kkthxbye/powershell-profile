@@ -12,7 +12,7 @@ function Enter-AwsSession {
             $lines[$seen..($lines.Count - 1)] | ForEach-Object { Write-Verbose $_ }
             $seen = $lines.Count
         }
-        $url = $lines | Select-String -NoEmphasis "^https?://\S+"
+        $url = $lines | Where-Object { $_.StartsWith('http://') -or $_.StartsWith('https://') } | Select-Object -First 1
     } while (!$url -and $j.State -eq 'Running')
     if (!$url) {
         Receive-Job $j

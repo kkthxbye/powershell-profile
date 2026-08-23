@@ -24,16 +24,12 @@ function Write-Newlines {
     )
 
     PROCESS {
-        $s -replace "\\\\n", "`n"`
-            -replace "\\n", "`n" `
-            -replace "\\t", "`t" `
-            -replace "\\r" , "`r"`
-
+        $s.Replace('\\n', "`n").Replace('\n', "`n").Replace('\t', "`t").Replace('\r', "`r")
     }
 }
 
 function Invoke-Make {
-    $escapedArgs = $args | ForEach-Object { $_ -replace "'", "''" }
+    $escapedArgs = $args | ForEach-Object { $_.Replace("'", "''") }
     $rawArgs = $escapedArgs -join ' '
     $cmd = "make --% SHELL=/bin/bash $rawArgs"
     Invoke-Expression $cmd

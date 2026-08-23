@@ -97,7 +97,7 @@ function Switch-Theme {
         (Get-Content $path -Raw | ConvertFrom-Json).'workbench.colorTheme'
     }
 
-    $next = if ($current -match 'Light') { 'Dark' } else { 'Light' }
+    $next = if ($current -like '*Light*') { 'Dark' } else { 'Light' }
     Set-Theme $next
 }
 
