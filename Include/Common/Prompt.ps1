@@ -1,25 +1,33 @@
 function Get-GitPromptSegment {
-    $status = git status --porcelain --branch 2>$null
+    $status = git status --porcelain=v2 --branch 2 > $null
     if (-not $status) { return $null }
 
-    $branch = $status[0] -replace '^## ', '' -replace '\.\.\..*$', '' -replace ' \(no branch\)', ''
-    if ($status[0] -match '\(no branch\)') {
-        $branch = (git rev-parse --short HEAD 2>$null)
+    $branch = $null
+    $ahead = 0; $behind = 0
+    $dirty = $false
+
+    foreach ($line in $status) {
+        if ($line.StartsWith('# branch.head ')) {
+            $branch = $line.Substring(14)
+        }
+        elseif ($line.StartsWith('# branch.ab ')) {
+            $parts = $line.Substring(12).Split(' ')
+            $ahead = [int]$parts[0].TrimStart('+')
+            $behind = [int]$parts[1].TrimStart('-')
+        }
+        elseif (-not $line.StartsWith('#')) {
+            $dirty = $true
+        }
     }
 
-    $ahead = 0; $behind = 0
-    if ($status[0] -match '\[ahead (\d+)(?:, behind (\d+))?\]') {
-        $ahead = [int]$matches[1]
-        $behind = if ($matches[2]) { [int]$matches[2] } else { 0 }
-    }
-    elseif ($status[0] -match '\[behind (\d+)\]') {
-        $behind = [int]$matches[1]
+    if ($branch -eq '(detached)') {
+        $branch = (git rev-parse --short HEAD 2>$null)
     }
 
     $suffix = @()
     if ($ahead -gt 0) { $suffix += "^$ahead" }
     if ($behind -gt 0) { $suffix += "v$behind" }
-    if ($status.Count -gt 1) { $suffix += '*' }
+    if ($dirty) { $suffix += '*' }
 
     if ($suffix) { "$branch $($suffix -join ' ')" } else { $branch }
 }
