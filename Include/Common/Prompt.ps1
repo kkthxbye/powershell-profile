@@ -62,7 +62,8 @@ function Format-CustomPrompt {
         [void]$sb.Append($purple).Append(') ').Append($reset)
     }
 
-    [void]$sb.Append($blue).Append('$ ').Append($reset)
+    $promptChar = if ($IsWindows) { '>' } else { '$' }
+    [void]$sb.Append($blue).Append("$promptChar ").Append($reset)
 
     $sb.ToString()
 }
