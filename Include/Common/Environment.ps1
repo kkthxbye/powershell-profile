@@ -23,6 +23,7 @@ try {
     # No interactive console available (e.g. non-interactive SSH exec) - skip PSReadLine setup
 }
 
+# function global:prompt { Format-CustomPrompt }
 oh-my-posh init pwsh --config "~/.poshthemes/kkthxbye.omp.json" | Invoke-Expression
 
 Set-PsFzfOption -EnableAliasFuzzyHistory -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
