@@ -3,16 +3,85 @@ function Get-PsrHistory {
 }
 
 function Export-AtuinHistoryToPsr {
+    <#
+    .PARAMETER Full
+        Force a full re-export instead of syncing only what's new since the last run.
+    #>
+    [CmdletBinding()]
+    param(
+        [switch]$Full
+    )
+
     if (-not (Get-Command atuin -ErrorAction Ignore)) {
         Write-Error "atuin executable not found in PATH."
         return
     }
 
     $path = (Get-PSReadlineOption).HistorySavePath
-    $commands = atuin history list --cmd-only --reverse false | Where-Object { $_ -ne '' }
-    Set-Content -LiteralPath $path -Value $commands -Encoding utf8
 
-    "Wrote $($commands.Count) command(s) from atuin history to $path"
+    $stateDir = Join-Path $HOME ".local/state/atuin-psr-sync"
+    New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
+    $cursorPath = Join-Path $stateDir "cursor"
+    $lockPath = Join-Path $stateDir "sync.lock"
+
+    try {
+        $lock = [System.IO.File]::Open($lockPath, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
+    }
+    catch [System.IO.IOException] {
+        Write-Verbose "Export-AtuinHistoryToPsr: a sync is already in progress; skipping."
+        return
+    }
+
+    try {
+        $cursor = if (-not $Full -and (Test-Path -LiteralPath $cursorPath)) {
+            (Get-Content -LiteralPath $cursorPath -Raw).Trim()
+        }
+
+        $syncedThrough = (Get-Date).ToString('yyyy-MM-ddTHH:mm:ss')
+
+        $merged = if ($cursor) {
+            atuin search --after $cursor --format "{time}`t{command}" --print0 2>&1
+        }
+        else {
+            atuin history list --format "{time}`t{command}" --print0 2>&1
+        }
+
+        $raw = $merged | Where-Object { $_ -isnot [System.Management.Automation.ErrorRecord] }
+        $stderr = ($merged | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] }) -join "`n"
+        if ($LASTEXITCODE -ne 0 -and $stderr) {
+            Write-Error "atuin history query failed (exit $LASTEXITCODE): $stderr`nLeaving $path untouched."
+            return
+        }
+
+        $records = ($raw -join "`n") -split "`0" | Where-Object { $_ -ne '' }
+        if (-not $records) {
+            Set-Content -LiteralPath $cursorPath -Value $syncedThrough
+            if ($cursor) { "No new commands since last sync." } else { Write-Error "atuin returned no history; leaving $path untouched." }
+            return
+        }
+
+        $commands = $records | ForEach-Object {
+            $time, $cmd = $_ -split "`t", 2
+            [pscustomobject]@{ Time = $time; Command = $cmd }
+        } | Sort-Object Time | Select-Object -ExpandProperty Command
+
+        $continuation = [char]96 + "`n"
+        $lines = $commands | ForEach-Object { ($_ -split "`n") -join $continuation }
+
+        if ($cursor) {
+            Add-Content -LiteralPath $path -Value $lines -Encoding utf8
+        }
+        else {
+            Set-Content -LiteralPath $path -Value $lines -Encoding utf8
+        }
+        Set-Content -LiteralPath $cursorPath -Value $syncedThrough
+
+        "Wrote $($commands.Count) command(s) from atuin history to $path"
+    }
+    finally {
+        $lock.Close()
+        $lock.Dispose()
+    }
 }
 
 function Write-Newlines {
