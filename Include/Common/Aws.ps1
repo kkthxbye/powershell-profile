@@ -1,30 +1,3 @@
-function Enter-AwsSession {
-    [CmdletBinding()]
-    param()
-    $j = Start-ThreadJob {
-        aws sso login --no-browser
-    }
-    $seen = 0
-    do {
-        Start-Sleep -Milliseconds 200
-        $lines = @(Receive-Job $j -Keep)
-        if ($lines.Count -gt $seen) {
-            $lines[$seen..($lines.Count - 1)] | ForEach-Object { Write-Verbose $_ }
-            $seen = $lines.Count
-        }
-        $url = $lines | Where-Object { $_.StartsWith('http://') -or $_.StartsWith('https://') } | Select-Object -First 1
-    } while (!$url -and $j.State -eq 'Running')
-    if (!$url) {
-        Receive-Job $j
-        Write-Error "Enter-AwsSession: aws sso login exited without producing a login URL."
-        return
-    }
-    Receive-Job $j | ForEach-Object { Write-Verbose $_ }
-    Write-Host "$url"
-    & $env:BROWSER --app-url "$url"
-    $j | Wait-Job | Receive-Job
-}
-
 function Wait-RDSDBLog {
     param(
         [Parameter(Mandatory, Position = 0)]
