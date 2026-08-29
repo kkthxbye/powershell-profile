@@ -28,9 +28,17 @@ try {
 # function global:prompt { Format-CustomPrompt }
 oh-my-posh init pwsh --config "~/.poshthemes/kkthxbye.omp.json" | Invoke-Expression
 
-Set-PsFzfOption -EnableAliasFuzzyHistory -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+Set-PsFzfOption -EnableAliasFuzzyHistory -PSReadlineChordReverseHistory 'Ctrl+r'
 $env:_PSFZF_FZF_DEFAULT_OPTS = '--wrap --height=100%'
 
 Import-Module powershell-yaml
 
 atuin init powershell --disable-up-arrow --disable-ctrl-r | Out-String | Invoke-Expression
+
+try {
+    Set-PSReadLineKeyHandler -Chord 'Ctrl+t' -BriefDescription 'Run Atuin search' -ScriptBlock {
+        & (Get-Module Atuin) { Invoke-AtuinSearch }
+    }
+} catch {
+    # No interactive console available - skip Atuin key bindings
+}
