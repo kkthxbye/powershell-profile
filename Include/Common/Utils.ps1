@@ -164,6 +164,41 @@ function Expand-Property {
 
 Set-Alias takeprop Expand-Property
 
+function Watch-Command {
+    <#
+    .SYNOPSIS
+        Repeatedly invokes a command, emitting its output prefixed with a timestamp.
+        Runs forever - stop with Ctrl+C.
+    .EXAMPLE
+        { Get-Random -Maximum 100 } | Watch-Command -IntervalSeconds 1
+    .EXAMPLE
+        Watch-Command -IntervalSeconds 1 { Get-Random -Maximum 100 }
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [scriptblock]$Command,
+
+        [Parameter(Position = 1)]
+        [int]$IntervalSeconds = 60
+    )
+
+    process {
+        while ($true) {
+            $now = Get-Date -Format 'HH:mm:ss'
+            & $Command | ForEach-Object {
+                if ($_ -is [ValueType] -or $_ -is [string]) {
+                    [pscustomobject]@{ Time = $now; Value = $_ }
+                }
+                else {
+                    $_ | Select-Object @{Name = 'Time'; Expression = { $now } }, *
+                }
+            }
+            Start-Sleep -Seconds $IntervalSeconds
+        }
+    }
+}
+
 function ConvertTo-JiraTable {
     begin { $rows = @() }
     process { if ($_ -ne $null) { $rows += $_ } }
