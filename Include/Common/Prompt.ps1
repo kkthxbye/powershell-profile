@@ -65,9 +65,7 @@ function Format-CustomPrompt {
 
     $git = Get-GitPromptSegment
     if ($git) {
-        [void]$sb.Append($purple).Append('(').Append($reset)
-        [void]$sb.Append($green).Append($git).Append($reset)
-        [void]$sb.Append($purple).Append(') ').Append($reset)
+        [void]$sb.Append(($purple, '(', $reset, $green, $git, $reset, $purple, ') ', $reset | Join-String))
     }
 
     $promptChar = if ($IsWindows) { '>' } else { '$' }
