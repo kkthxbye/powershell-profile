@@ -2,7 +2,7 @@ $c = [cultureinfo]::new('en-GB')
 $c.DateTimeFormat.ShortDatePattern = 'dd.MM.yyyy'
 [cultureinfo]::CurrentCulture = $c
 
-Import-Module CompletionPredictor
+Import-Module CompletionPredictor -ErrorAction SilentlyContinue
 
 $PSReadLineOptions = @{
     EditMode = 'Windows'
