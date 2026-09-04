@@ -36,9 +36,9 @@ function Format-CustomPrompt {
     $esc = [char]27
     $reset = "$esc[0m"
     $navy = "$esc[38;2;16;14;35m"
-    $green = "$esc[38;2;144;238;144m"
+    $green = "$esc[38;2;138;226;52m"
     $mint = "$esc[38;2;109;255;158m"
-    $blue = "$esc[38;2;173;216;230m"
+    $blue = "$esc[38;2;114;159;207m"
     $purple = "$esc[38;2;173;127;168m"
 
     $sb = [System.Text.StringBuilder]::new()
