@@ -43,6 +43,9 @@ function Format-CustomPrompt {
 
     $sb = [System.Text.StringBuilder]::new()
 
+    $title = Split-Path $PWD.Path -Leaf
+    [void]$sb.Append("$esc]0;$title`a")
+
     $isAdmin = if ($IsWindows) {
         ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
     }
@@ -61,7 +64,11 @@ function Format-CustomPrompt {
         [void]$sb.Append($mint).Append("($(Split-Path $env:VIRTUAL_ENV -Leaf)) ").Append($reset)
     }
 
-    [void]$sb.Append($blue).Append("$($PWD.Path) ").Append($reset)
+    $path = $PWD.Path
+    if ($HOME -and $path.StartsWith($HOME, [StringComparison]::OrdinalIgnoreCase)) {
+        $path = "~" + $path.Substring($HOME.Length)
+    }
+    [void]$sb.Append($blue).Append("$path ").Append($reset)
 
     $git = Get-GitPromptSegment
     if ($git) {
