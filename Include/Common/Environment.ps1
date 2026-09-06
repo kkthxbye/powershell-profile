@@ -16,13 +16,17 @@ $PSReadLineOptions = @{
 }
 try {
     Set-PSReadLineOption @PSReadLineOptions
-
     Set-PSReadLineOption -Colors @{
         "Operator" = "`e[38;2;150;150;150m"
         "Parameter" = "`e[38;2;150;150;150m"
     }
-} catch {
-    # No interactive console available (e.g. non-interactive SSH exec) - skip PSReadLine setup
+    Set-PSReadLineKeyHandler -Chord 'Ctrl+t' -BriefDescription 'Run Atuin search' -ScriptBlock {
+        & (Get-Module Atuin) { Invoke-AtuinSearch }
+    }
+    Set-PSReadLineKeyHandler -Function DigitArgument -Chord @()
+}
+catch {
+
 }
 
 function global:prompt { Format-CustomPrompt }
@@ -35,10 +39,4 @@ Import-Module powershell-yaml
 
 atuin init powershell --disable-up-arrow --disable-ctrl-r | Out-String | Invoke-Expression
 
-try {
-    Set-PSReadLineKeyHandler -Chord 'Ctrl+t' -BriefDescription 'Run Atuin search' -ScriptBlock {
-        & (Get-Module Atuin) { Invoke-AtuinSearch }
-    }
-} catch {
-    # No interactive console available - skip Atuin key bindings
-}
+
