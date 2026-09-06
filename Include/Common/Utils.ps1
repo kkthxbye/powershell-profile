@@ -199,6 +199,38 @@ function Watch-Command {
     }
 }
 
+function ConvertTo-HumanSize {
+    <#
+    .EXAMPLE
+        1536 | ConvertTo-HumanSize
+        # 1.5 KB
+    .EXAMPLE
+        (Get-ChildItem).Length | ConvertTo-HumanSize
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [long]$Bytes,
+
+        [int]$Decimals = 2
+    )
+
+    process {
+        $units = 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'
+        $size = [double]$Bytes
+        $sign = if ($size -lt 0) { $size = -$size; '-' } else { '' }
+
+        $i = 0
+        while ($size -ge 1024 -and $i -lt $units.Count - 1) {
+            $size /= 1024
+            $i++
+        }
+
+        $rounded = [math]::Round($size, $Decimals)
+        "$sign$rounded $($units[$i])"
+    }
+}
+
 function ConvertTo-JiraTable {
     begin { $rows = @() }
     process { if ($_ -ne $null) { $rows += $_ } }
