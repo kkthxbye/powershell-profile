@@ -39,4 +39,20 @@ Import-Module powershell-yaml
 
 atuin init powershell --disable-up-arrow --disable-ctrl-r | Out-String | Invoke-Expression
 
+if (Test-Path ~/.nvm/nvm.sh) {
+    bash -c "source ~/.nvm/nvm.sh; nvm list" | Out-Null
+
+    function nvm {
+        bash -c "source ~/.nvm/nvm.sh; nvm $args"
+    }
+
+    function node {
+        bash -c "source ~/.nvm/nvm.sh; node $args"
+    }
+
+    function npm {
+        bash -c "source ~/.nvm/nvm.sh; npm $args"
+    }
+}
+
 
