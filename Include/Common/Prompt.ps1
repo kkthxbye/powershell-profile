@@ -83,10 +83,4 @@ function Format-CustomPrompt {
 
 function Enable-CustomPrompt {
     function global:prompt { Format-CustomPrompt }
-    Write-Host 'Custom prompt enabled. Run Enable-PoshPrompt to switch back.' -ForegroundColor DarkGray
-}
-
-function Enable-PoshPrompt {
-    oh-my-posh init pwsh --config "~/.poshthemes/kkthxbye.omp.json" | Invoke-Expression
-    Write-Host 'oh-my-posh prompt enabled. Run Enable-CustomPrompt to switch back.' -ForegroundColor DarkGray
 }

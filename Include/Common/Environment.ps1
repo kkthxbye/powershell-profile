@@ -30,7 +30,6 @@ catch {
 }
 
 function global:prompt { Format-CustomPrompt }
-# oh-my-posh init pwsh --config "~/.poshthemes/kkthxbye.omp.json" | Invoke-Expression
 
 Set-PsFzfOption -EnableAliasFuzzyHistory -PSReadlineChordReverseHistory 'Ctrl+r'
 $env:_PSFZF_FZF_DEFAULT_OPTS = '--wrap --height=100%'
