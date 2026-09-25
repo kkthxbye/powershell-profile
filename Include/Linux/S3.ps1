@@ -14,12 +14,14 @@ function Get-RcloneS3Profile {
     $inSection = $false
     foreach ($line in Get-Content -LiteralPath $ConfigPath) {
         $trimmed = $line.Trim()
-        if ($trimmed -match '^\[(.+)\]$') {
-            $inSection = ($matches[1] -eq $Remote)
+        if ($trimmed.StartsWith('[') -and $trimmed.EndsWith(']')) {
+            $inSection = ($trimmed.Trim('[', ']') -eq $Remote)
             continue
         }
-        if ($inSection -and $trimmed -match '^profile\s*=\s*(.+)$') {
-            return $matches[1].Trim()
+        if (-not $inSection) { continue }
+        $key, $value = $trimmed.Split('=', 2)
+        if ($null -ne $value -and $key.Trim() -eq 'profile') {
+            return $value.Trim()
         }
     }
     return $null
