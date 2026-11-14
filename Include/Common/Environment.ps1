@@ -31,12 +31,16 @@ catch {
 
 function global:prompt { Format-CustomPrompt }
 
-Set-PsFzfOption -EnableAliasFuzzyHistory -PSReadlineChordReverseHistory 'Ctrl+r'
+if (Get-Command Set-PsFzfOption -ErrorAction SilentlyContinue) {
+    Set-PsFzfOption -EnableAliasFuzzyHistory -PSReadlineChordReverseHistory 'Ctrl+r'
+}
 $env:_PSFZF_FZF_DEFAULT_OPTS = '--wrap --height=100%'
 
-Import-Module powershell-yaml
+if (Get-Module -ListAvailable -Name powershell-yaml) { Import-Module powershell-yaml }
 
-atuin init powershell --disable-up-arrow --disable-ctrl-r | Out-String | Invoke-Expression
+if (Get-Command atuin -ErrorAction SilentlyContinue) {
+    atuin init powershell --disable-up-arrow --disable-ctrl-r | Out-String | Invoke-Expression
+}
 
 if (Test-Path ~/.nvm/nvm.sh) {
     bash -c "source ~/.nvm/nvm.sh; nvm list" | Out-Null
